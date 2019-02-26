@@ -6,7 +6,7 @@
 
 // Author: Shuo Chen (chenshuo at chenshuo dot com)
 //
-
+#include <cstdlib>
 #include <muduo/net/Buffer.h>
 #include <muduo/net/http/HttpContext.h>
 
@@ -114,8 +114,13 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
     else if (state_ == kExpectBody)
     {
       // FIXME:
-      request_.setBody(buf->peek(),buf->peek()+buf->readableBytes());
-	    buf->retrieveAll();
+      //request_.setBody(buf->peek(),buf->peek()+buf->readableBytes());
+	    //buf->retrieveAll();
+
+      int bodySize = atoi(request_.getHeader("Content-Length").c_str());
+      request_.setBody(buf->peek(),buf->peek()+bodySize);
+      buf->retrieve(static_cast<size_t>(bodySize));
+
 	    hasMore=false;
 	    state_=kGotAll;
     }
